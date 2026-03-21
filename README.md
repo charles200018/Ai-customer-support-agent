@@ -14,7 +14,6 @@ A complete AI-powered customer support agent with Retrieval-Augmented Generation
 
 ## Project Structure
 
-```
 ai-customer-agent/
 ├── frontend/                # React + Vite application
 │   ├── src/
@@ -81,12 +80,6 @@ psql -U postgres -d ai_customer_agent_db -f backend/db/schema.sql
 
 ### 3. Configure Environment Variables
 
-```bash
-# Copy the example file
-cp .env.example .env
-
-# Edit .env with your configuration
-# Default PostgreSQL settings:
 # DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ai_customer_agent_db
 ```
 
@@ -121,9 +114,6 @@ npm run backend     # Terminal 2
    ```
    http://localhost:5173
    ```
-
-3. **Check Status Page:**
-   - You should see "PHASE 1 STATUS" section
    - All three statuses should show green checkmarks:
      - ✅ Frontend (React + Vite) running
      - ✅ Backend (Express) setup

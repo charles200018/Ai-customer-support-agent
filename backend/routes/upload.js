@@ -3,6 +3,7 @@ const multer = require('multer');
 const { authenticateToken } = require('../middleware/auth.js');
 const { extractTextFromFile, isSupportedFile } = require('../utils/extractText.js');
 
+import express from 'express';
 const router = express.Router();
 
 const upload = multer({
@@ -50,4 +51,4 @@ router.use((error, req, res, next) => {
   return next(error);
 });
 
-module.exports = router;
+export default router;

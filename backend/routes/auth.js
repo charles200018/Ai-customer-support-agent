@@ -1,8 +1,8 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
-const { getDb } = require('../config/database.js');
-const { authenticateToken } = require('../middleware/auth.js');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
+import { getDb } from '../config/database.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -116,4 +116,4 @@ router.get('/status', (req, res) => {
   res.json({ message: 'Auth routes are active' });
 });
 
-module.exports = router;
+export default router;

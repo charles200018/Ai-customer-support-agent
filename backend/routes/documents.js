@@ -1,7 +1,7 @@
-const express = require('express');
-const { getDb } = require('../config/database.js');
-const { authenticateToken } = require('../middleware/auth.js');
-const { splitContentIntoChunks } = require('../utils/rag.js');
+import express from 'express';
+import { getDb } from '../config/database.js';
+import { authenticateToken } from '../middleware/auth.js';
+import { splitContentIntoChunks } from '../utils/rag.js';
 
 const router = express.Router();
 
@@ -106,4 +106,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

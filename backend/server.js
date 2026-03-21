@@ -2,13 +2,14 @@ dotenv.config();
 // backend/server.js
 // Main Express server setup for AI Customer Support Agent
 
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const chatRoutes = require('./routes/chat.js');
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import chatRoutes from './routes/chat.js';
 
 // Debug: Confirm chatRoutes is loaded
 console.log('chatRoutes loaded:', typeof chatRoutes);
+
 
 // Load environment variables from .env file
 dotenv.config();

@@ -7,7 +7,7 @@
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
     "frontend": "npm run dev --prefix frontend",
     "backend": "npm run dev --prefix backend",
-    "build": "npm run build --prefix frontend && npm run build --prefix backend",
+    // ...build script removed for Vercel compatibility
     "start": "npm start --prefix backend"
   },
   "devDependencies": {

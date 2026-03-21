@@ -1,7 +1,7 @@
 // backend/routes/chat.js
 // Handles the /api/chat POST endpoint for AI chat completions
 
-const express = require('express');
+import express from 'express';
 const fetch = require('node-fetch');
 
 console.log('chatRoutes file loaded');
@@ -67,4 +67,4 @@ router.post('/chat', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
