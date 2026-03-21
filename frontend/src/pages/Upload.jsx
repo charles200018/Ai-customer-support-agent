@@ -24,25 +24,23 @@ function Upload() {
   }, [])
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('authToken')
-    return {
-      Authorization: `Bearer ${token}`,
-    }
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   const loadDocuments = async () => {
     try {
-      setLoadingDocs(true)
+      setLoadingDocs(true);
       const response = await axios.get('/api/documents', {
         headers: getAuthHeaders(),
-      })
-      setDocuments(response.data.documents || [])
+      });
+      setDocuments(response.data.documents || []);
     } catch (err) {
-      setError(err?.response?.data?.error || 'Failed to load documents')
+      setError(err?.response?.data?.error || 'Failed to load documents');
     } finally {
-      setLoadingDocs(false)
+      setLoadingDocs(false);
     }
-  }
+  };
 
   const handleSelectFile = (event) => {
     setError('')
@@ -71,47 +69,47 @@ function Upload() {
   }
 
   const handleUpload = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (!file) {
-      setError('Please select a file first')
-      return
+      setError('Please select a file first');
+      return;
     }
 
     try {
-      setLoading(true)
-      setError('')
-      setSaveMessage('')
-      setSavedDocumentId('')
+      setLoading(true);
+      setError('');
+      setSaveMessage('');
+      setSavedDocumentId('');
 
-      const formData = new FormData()
-      formData.append('file', file)
+      const formData = new FormData();
+      formData.append('file', file);
 
       const response = await axios.post('/api/upload', formData, {
         headers: {
           ...getAuthHeaders(),
           'Content-Type': 'multipart/form-data',
         },
-      })
+      });
 
-      setResult(response.data)
+      setResult(response.data);
     } catch (err) {
-      setError(err?.response?.data?.error || 'Upload failed')
+      setError(err?.response?.data?.error || 'Upload failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSaveDocument = async () => {
     if (!result?.file?.filename || !result?.extractedText) {
-      setError('Upload and extract a document first')
-      return
+      setError('Upload and extract a document first');
+      return;
     }
 
     try {
-      setSaving(true)
-      setError('')
-      setSaveMessage('')
+      setSaving(true);
+      setError('');
+      setSaveMessage('');
 
       const response = await axios.post(
         '/api/documents',
@@ -124,32 +122,32 @@ function Upload() {
         {
           headers: getAuthHeaders(),
         }
-      )
+      );
 
-      setSavedDocumentId(response.data.document.id)
-      setSaveMessage('Document saved to PostgreSQL')
-      await loadDocuments()
+      setSavedDocumentId(response.data.document.id);
+      setSaveMessage('Document saved to PostgreSQL');
+      await loadDocuments();
     } catch (err) {
-      setError(err?.response?.data?.error || 'Failed to save document')
+      setError(err?.response?.data?.error || 'Failed to save document');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleDeleteDocument = async (id) => {
     try {
-      setError('')
+      setError('');
       await axios.delete(`/api/documents/${id}`, {
         headers: getAuthHeaders(),
-      })
+      });
       if (savedDocumentId === id) {
-        setSavedDocumentId('')
+        setSavedDocumentId('');
       }
-      await loadDocuments()
+      await loadDocuments();
     } catch (err) {
-      setError(err?.response?.data?.error || 'Failed to delete document')
+      setError(err?.response?.data?.error || 'Failed to delete document');
     }
-  }
+  };
 
   const handleLogout = async () => {
     await logout()
