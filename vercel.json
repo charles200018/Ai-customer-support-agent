@@ -17,6 +17,7 @@
     { "src": "/api/auth/logout", "dest": "backend/api/auth/logout.js" },
     { "src": "/api/chat", "dest": "backend/api/chat.js" },
     { "src": "/api/health", "dest": "backend/api/health.js" },
-    { "src": "/(.*)", "dest": "frontend/dist/$1" }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
