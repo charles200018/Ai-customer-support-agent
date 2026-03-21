@@ -42,3 +42,5 @@ pids/
 *.seed
 *.pid.lock
 node_modules
+.vercel
+.env*.local
