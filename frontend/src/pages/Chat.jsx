@@ -1,75 +1,146 @@
-import { useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useAuth } from '../hooks/useAuth'
+
+import { useMemo, useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../hooks/useAuth';
+
 
 function Chat() {
-  const navigate = useNavigate()
-  const { logout } = useAuth()
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      role: 'assistant',
-      text: 'Welcome. This is the basic chat UI for Phase 5. Ask anything to see a mock response.',
-    },
-  ])
-  const [input, setInput] = useState('')
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState('')
-  const nextIdRef = useRef(2)
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [documents, setDocuments] = useState([]);
+  const [selectedDocId, setSelectedDocId] = useState('');
+  const [docLoading, setDocLoading] = useState(true);
+  const [docError, setDocError] = useState('');
+  const [docName, setDocName] = useState('');
+  const nextIdRef = useRef(1);
 
-  const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending])
+  useEffect(() => {
+    // Load documents on mount
+    const fetchDocs = async () => {
+      setDocLoading(true);
+      setDocError('');
+      try {
+        const token = localStorage.getItem('authToken');
+        const res = await axios.get('/api/documents', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setDocuments(res.data.documents || []);
+        if (res.data.documents && res.data.documents.length > 0) {
+          setSelectedDocId(res.data.documents[0].id);
+          setDocName(res.data.documents[0].filename || '');
+        }
+      } catch (err) {
+        setDocError(err?.response?.data?.error || 'Failed to load documents');
+      } finally {
+        setDocLoading(false);
+      }
+    };
+    fetchDocs();
+    setMessages([
+      {
+        id: 0,
+        role: 'assistant',
+        text: 'Welcome! Select a document to chat about, then ask your question.',
+      },
+    ]);
+  }, []);
+
+  useEffect(() => {
+    // Update docName when selectedDocId changes
+    const doc = documents.find((d) => d.id === selectedDocId);
+    setDocName(doc?.filename || '');
+  }, [selectedDocId, documents]);
+
+  const canSend = useMemo(() => input.trim().length > 0 && !sending && !!selectedDocId, [input, sending, selectedDocId]);
 
   const handleSend = async (event) => {
-    event.preventDefault()
-    const text = input.trim()
-    if (!text || sending) return
+    event.preventDefault();
+    const text = input.trim();
+    if (!text || sending || !selectedDocId) return;
 
-    const userMessage = { id: nextIdRef.current++, role: 'user', text }
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-    setError('')
-    setSending(true)
+    const userMessage = { id: nextIdRef.current++, role: 'user', text };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setError('');
+    setSending(true);
 
     try {
-      const token = localStorage.getItem('authToken')
+      const token = localStorage.getItem('authToken');
       const response = await axios.post(
         '/api/chat',
-        { message: text },
+        { userMessage: text, documentId: selectedDocId },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
+      );
 
       const assistantMessage = {
         id: nextIdRef.current++,
         role: 'assistant',
-        text: response.data.reply,
-      }
+        text: response.data.answer,
+      };
 
-      setMessages((prev) => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
-      setError(err?.response?.data?.error || 'Failed to send message')
+      setError(err?.response?.data?.error || 'Failed to send message');
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
   const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h1>Basic Chat</h1>
+        <h1>AI Chat</h1>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button type="button" onClick={() => navigate('/dashboard')}>Dashboard</button>
           <button type="button" onClick={handleLogout}>Logout</button>
         </div>
       </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label htmlFor="doc-select"><strong>Document:</strong></label>{' '}
+        {docLoading ? (
+          <span>Loading documents...</span>
+        ) : docError ? (
+          <span style={{ color: '#900' }}>{docError}</span>
+        ) : (
+          <select
+            id="doc-select"
+            value={selectedDocId}
+            onChange={(e) => setSelectedDocId(e.target.value)}
+            style={{ minWidth: 200, marginLeft: 8 }}
+          >
+            <option value="">-- Select a document --</option>
+            {documents.map((doc) => (
+              <option key={doc.id} value={doc.id}>{doc.filename}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {!selectedDocId && !docLoading && (
+        <div style={{ marginBottom: '1rem', color: '#b36d00', background: '#fffbe6', padding: '0.75rem', borderRadius: 8 }}>
+          No document selected. Please upload or select a document to chat.
+        </div>
+      )}
+
+      {docName && (
+        <div style={{ marginBottom: '1rem', color: '#555' }}>
+          <strong>Chatting about:</strong> {docName}
+        </div>
+      )}
 
       <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', minHeight: 360 }}>
         {messages.map((message) => (
@@ -131,16 +202,16 @@ function Chat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message"
+          placeholder={selectedDocId ? 'Type your message' : 'Select a document to chat'}
           style={{ flex: 1, padding: '0.65rem', border: '1px solid #ccc', borderRadius: 8 }}
-          disabled={sending}
+          disabled={sending || !selectedDocId}
         />
         <button type="submit" disabled={!canSend}>
           {sending ? 'Sending...' : 'Send'}
         </button>
       </form>
     </div>
-  )
+  );
 }
 
-export default Chat
+export default Chat;
