@@ -1,12 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "src/main.jsx", "use": "@vercel/node" },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
-  // NOTE: Set Vercel project root to 'frontend' and build command to 'npm run build' in Vercel dashboard.
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite"
 }
