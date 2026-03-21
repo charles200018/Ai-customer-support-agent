@@ -24,13 +24,15 @@ function Upload() {
   }, [])
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   const loadDocuments = async () => {
     try {
       setLoadingDocs(true);
+      // Debug: log the token being sent
+      console.log('Token being sent:', localStorage.getItem('authToken'));
       const response = await axios.get('/api/documents', {
         headers: getAuthHeaders(),
       });
@@ -78,6 +80,8 @@ function Upload() {
 
     try {
       setLoading(true);
+      // Debug: log the token being sent
+      console.log('Token being sent:', localStorage.getItem('authToken'));
       setError('');
       setSaveMessage('');
       setSavedDocumentId('');
