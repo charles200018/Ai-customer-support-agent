@@ -49,3 +49,7 @@ export function getFirestore() {
   const firebaseApp = getFirebaseApp()
   return admin.firestore(firebaseApp)
 }
+export function getAuth() {
+  const firebaseApp = getFirebaseApp()
+  return admin.auth(firebaseApp)
+}
