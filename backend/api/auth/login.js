@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { getAuth } from '../../../config/firebase.js';
+import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
@@ -21,12 +21,19 @@ export default async function handler(req, res) {
   if (!googleToken) {
     return res.status(400).json({ error: 'googleToken is required' });
   }
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    return res.status(500).json({ error: 'GOOGLE_CLIENT_ID not set' });
+  }
   try {
-    const auth = getAuth();
-    const decodedToken = await auth.verifyIdToken(googleToken);
-    const { uid, email } = decodedToken;
-    const token = jwt.sign({ userId: uid, email }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    return res.status(200).json({ token, user: { uid, email } });
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+    const token = jwt.sign({ email, name, picture }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    return res.status(200).json({ token, user: { email, name, picture } });
   } catch (err) {
     return res.status(401).json({ error: 'Invalid Google token', details: err.message });
   }
