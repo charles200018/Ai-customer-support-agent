@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Customer Support Agent - RAG System
 
 A complete AI-powered customer support agent with Retrieval-Augmented Generation (RAG) capabilities.
@@ -244,3 +245,6 @@ Once Phase 1 is confirmed working, the next phase will implement:
 **Status**: ✅ Phase 1 Complete (Ready for Phase 2)
 
 **Last Updated**: March 20, 2026
+=======
+# Ai-customer-support-agent
+>>>>>>> f6cf17d19b78756fa04d7dcddd46d6220645b5b1
