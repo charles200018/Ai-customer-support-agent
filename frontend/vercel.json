@@ -8,4 +8,5 @@
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
+  // NOTE: Set Vercel project root to 'frontend' and build command to 'npm run build' in Vercel dashboard.
 }
