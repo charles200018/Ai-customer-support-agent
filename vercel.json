@@ -7,12 +7,16 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "backend/api/*.js",
+      "src": "backend/api/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "backend/api/$1.js" },
+    { "src": "/api/auth/login", "dest": "backend/api/auth/login.js" },
+    { "src": "/api/auth/verify", "dest": "backend/api/auth/verify.js" },
+    { "src": "/api/auth/logout", "dest": "backend/api/auth/logout.js" },
+    { "src": "/api/chat", "dest": "backend/api/chat.js" },
+    { "src": "/api/health", "dest": "backend/api/health.js" },
     { "src": "/(.*)", "dest": "frontend/dist/$1" }
   ]
 }
