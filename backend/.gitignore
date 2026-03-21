@@ -1,1 +1,10 @@
 node_modules
+.env.example
+
+# Security: ignore all env and secret files
+.env*
+*.env*
+*.key
+*.pem
+*.crt
+secrets.*
