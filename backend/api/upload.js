@@ -1,9 +1,11 @@
-import jwt from "jsonwebtoken"
-import fs from "fs"
-import { IncomingForm } from "formidable"
-import pdfParse from "pdf-parse"
-import { initializeApp, getApps, cert } from "firebase-admin/app"
-import { getFirestore } from "firebase-admin/firestore"
+import jwt from 'jsonwebtoken'
+import fs from 'fs'
+import { IncomingForm } from 'formidable'
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const pdfParse = require('pdf-parse')
+import { initializeApp, getApps, cert } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
 
 export const config = { api: { bodyParser: false } }
 
@@ -46,24 +48,37 @@ export default async function handler(req, res) {
     form.parse(req, async (err, fields, files) => {
       if (err) { res.status(400).json({ error: err.message }); return resolve() }
       const file = Array.isArray(files.file) ? files.file[0] : files.file
-      if (!file) { res.status(400).json({ error: "No file uploaded" }); return resolve() }
+      if (!file) { res.status(400).json({ error: 'No file uploaded' }); return resolve() }
+      // Debug log for formidable v3 file object
+      console.log('File object:', JSON.stringify({
+        filepath: file.filepath,
+        mimetype: file.mimetype,
+        originalFilename: file.originalFilename,
+        size: file.size
+      }))
+      let buffer
       try {
-        let extractedText = ""
-        const buffer = fs.readFileSync(file.filepath)
-        if (file.mimetype === "text/plain") {
-          extractedText = buffer.toString("utf-8")
-        } else if (file.mimetype === "application/pdf") {
+        buffer = fs.readFileSync(file.filepath)
+      } catch (fsErr) {
+        res.status(500).json({ error: 'Cannot read file', details: fsErr.message })
+        return resolve()
+      }
+      try {
+        let extractedText = ''
+        if (file.mimetype === 'text/plain') {
+          extractedText = buffer.toString('utf-8')
+        } else if (file.mimetype === 'application/pdf') {
           const result = await pdfParse(buffer)
-          extractedText = result.text?.trim() || ""
+          extractedText = result.text?.trim() || ''
         } else {
-          res.status(400).json({ error: "Only PDF and TXT allowed" }); return resolve()
+          res.status(400).json({ error: 'Only PDF and TXT files are allowed' }); return resolve()
         }
         if (!extractedText) {
-          res.status(422).json({ error: "Unable to extract text" }); return resolve()
+          res.status(422).json({ error: 'Unable to extract text from file' }); return resolve()
         }
         const db = getDb()
         const createdAt = new Date()
-        const ref = await db.collection("documents").add({
+        const ref = await db.collection('documents').add({
           userId, filename: file.originalFilename,
           content: extractedText, file_type: file.mimetype,
           file_size: file.size, createdAt, updatedAt: createdAt
@@ -75,7 +90,7 @@ export default async function handler(req, res) {
         }})
         resolve()
       } catch (error) {
-        res.status(500).json({ error: "Failed to process file", details: error.message })
+        res.status(500).json({ error: 'Failed to process file', details: error.message })
         resolve()
       }
     })
