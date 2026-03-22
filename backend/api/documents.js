@@ -1,4 +1,7 @@
+
+
 import admin from 'firebase-admin';
+import jwt from 'jsonwebtoken';
 
 function getFirestore() {
   if (!admin.apps.length) {
@@ -13,28 +16,38 @@ function getFirestore() {
   return admin.firestore();
 }
 
-function getUserId(req) {
-  // Expect JWT in Authorization header as 'Bearer <token>'
-  const auth = req.headers['authorization'] || '';
-  const token = auth.split(' ')[1];
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    return payload.userId;
-  } catch {
-    return null;
-  }
-}
 
-export default async function handler(req, res) {
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // --- Begin new JWT auth check ---
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  console.log('Auth header present:', !!authHeader);
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No bearer token found');
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  const token = authHeader.substring(7);
+  console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
+  console.log('Token length:', token.length);
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Token verified successfully:', decoded.userId);
+  } catch (err) {
+    console.log('JWT verify error:', err.message);
+    return res.status(401).json({ error: 'Invalid token', details: err.message });
+  }
+  const userId = decoded.userId;
+  // --- End new JWT auth check ---
+
   const db = getFirestore();
-  const userId = getUserId(req);
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
   if (req.method === 'GET') {
     try {

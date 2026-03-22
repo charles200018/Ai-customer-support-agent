@@ -1,7 +1,10 @@
 
+
+
 import formidable from 'formidable';
 import admin from 'firebase-admin';
 import pdfParse from 'pdf-parse';
+import jwt from 'jsonwebtoken';
 
 export const config = {
   api: {
@@ -22,17 +25,6 @@ function getFirestore() {
   return admin.firestore();
 }
 
-function getUserId(req) {
-  const auth = req.headers['authorization'] || '';
-  const token = auth.split(' ')[1];
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    return payload.userId;
-  } catch {
-    return null;
-  }
-}
 
 function splitContentIntoChunks(content, chunkWordSize = 400) {
   if (!content || typeof content !== 'string') return [];
@@ -46,7 +38,7 @@ function splitContentIntoChunks(content, chunkWordSize = 400) {
   return chunks;
 }
 
-export default async function handler(req, res) {
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -56,8 +48,29 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const userId = getUserId(req);
-  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  // --- Begin new JWT auth check ---
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  console.log('Auth header present:', !!authHeader);
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No bearer token found');
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  const token = authHeader.substring(7);
+  console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
+  console.log('Token length:', token.length);
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Token verified successfully:', decoded.userId);
+  } catch (err) {
+    console.log('JWT verify error:', err.message);
+    return res.status(401).json({ error: 'Invalid token', details: err.message });
+  }
+  const userId = decoded.userId;
+  // --- End new JWT auth check ---
 
   const form = new formidable.IncomingForm({ maxFileSize: 10 * 1024 * 1024 });
   form.parse(req, async (err, fields, files) => {
