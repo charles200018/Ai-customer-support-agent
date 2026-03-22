@@ -1,19 +1,22 @@
 
 
-import admin from 'firebase-admin';
-import jwt from 'jsonwebtoken';
 
-function getFirestore() {
-  if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+import jwt from 'jsonwebtoken';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+
+function getDb() {
+  if (getApps().length === 0) {
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      })
+    })
   }
-  return admin.firestore();
+  return getFirestore()
 }
 
 
@@ -47,7 +50,7 @@ function getFirestore() {
   const userId = decoded.userId;
   // --- End new JWT auth check ---
 
-  const db = getFirestore();
+  const db = getDb();
 
   if (req.method === 'GET') {
     try {
