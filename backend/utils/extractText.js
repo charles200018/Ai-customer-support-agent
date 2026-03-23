@@ -1,9 +1,7 @@
 // backend/utils/extractText.js
-// Utility to extract text from uploaded files (PDF and TXT)
+// Extracts text from uploaded PDF and TXT files
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+import pdfParse from 'pdf-parse';
 
 const SUPPORTED_MIME_TYPES = new Set(['application/pdf', 'text/plain']);
 

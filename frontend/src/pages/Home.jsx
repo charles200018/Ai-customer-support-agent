@@ -34,7 +34,7 @@ function Home() {
   return (
     <div style={{ padding: '3rem', maxWidth: '600px', margin: '0 auto' }}>
       <h1 style={{ marginBottom: '2rem' }}>AI Customer Support Agent</h1>
-      
+
       <div style={{ marginBottom: '2rem' }}>
         <h2>System Status</h2>
         <div style={{ marginTop: '1rem' }}>
@@ -48,7 +48,7 @@ function Home() {
             </span>
           </p>
           <p>
-            <strong>PostgreSQL Database:</strong>{' '}
+            <strong>Firebase Database:</strong>{' '}
             <span style={{ color: dbStatus === 'connected' ? 'green' : 'red' }}>
               {dbStatus === 'checking' ? '⏳ Checking...' : dbStatus === 'connected' ? '✅ Connected' : '❌ Disconnected'}
             </span>
@@ -56,9 +56,9 @@ function Home() {
         </div>
       </div>
 
-      <div style={{ 
-        backgroundColor: '#f0f0f0', 
-        padding: '1rem', 
+      <div style={{
+        backgroundColor: '#f0f0f0',
+        padding: '1rem',
         borderRadius: '4px',
         marginBottom: '2rem'
       }}>
@@ -66,7 +66,7 @@ function Home() {
         <ul style={{ marginTop: '1rem' }}>
           <li>✅ Frontend (React + Vite) running</li>
           <li>✅ Backend (Express) setup</li>
-          <li>✅ PostgreSQL connection configured</li>
+          <li>✅ Firebase / Firestore connection configured</li>
           <li>✅ Google authentication routes configured</li>
         </ul>
       </div>
