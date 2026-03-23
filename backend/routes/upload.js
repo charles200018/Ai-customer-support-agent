@@ -1,15 +1,19 @@
-const express = require('express');
-const multer = require('multer');
-const { authenticateToken } = require('../middleware/auth.js');
-const { extractTextFromFile, isSupportedFile } = require('../utils/extractText.js');
+// backend/routes/upload.js
+// Handles file uploads: parses multipart form, extracts text, stores in Firestore
 
 import express from 'express';
+import multer from 'multer';
+import { authenticateToken } from '../middleware/auth.js';
+import { extractTextFromFile, isSupportedFile } from '../utils/extractText.js';
+import { getDb } from '../config/database.js';
+import { splitContentIntoChunks } from '../utils/rag.js';
+
 const router = express.Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024,
+    fileSize: 10 * 1024 * 1024, // 10 MB
   },
 });
 
@@ -28,22 +32,38 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
       return res.status(422).json({ error: 'Unable to extract text from this file' });
     }
 
-    return res.json({
-      message: 'File processed successfully',
-      file: {
+    // Split into chunks for RAG retrieval
+    const chunks = splitContentIntoChunks(extractedText);
+
+    const db = getDb();
+    const createdAt = new Date();
+    const ref = await db.collection('documents').add({
+      userId: req.user.userId,
+      filename: req.file.originalname,
+      content: extractedText,
+      chunks,
+      file_type: req.file.mimetype,
+      file_size: req.file.size,
+      createdAt,
+      updatedAt: createdAt,
+    });
+
+    return res.status(201).json({
+      document: {
+        id: ref.id,
         filename: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
+        file_type: req.file.mimetype,
+        file_size: req.file.size,
+        created_at: createdAt.toISOString(),
       },
-      extractedText,
-      preview: extractedText.slice(0, 1000),
-      extractedChars: extractedText.length,
     });
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to process file' });
+    console.error('Upload error:', error);
+    return res.status(500).json({ error: 'Failed to process file', details: error.message });
   }
 });
 
+// Multer-specific error handler (file too large, etc.)
 router.use((error, req, res, next) => {
   if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({ error: 'File too large. Maximum allowed size is 10MB' });

@@ -81,7 +81,7 @@ function Dashboard() {
                 ✅ Phase 3: File Upload + Text Extraction
               </div>
               <div className="status-item completed">
-                ✅ Phase 4: Store Documents in PostgreSQL
+                ✅ Phase 4: Store Documents in Firebase / Firestore
               </div>
               <div className="status-item completed">
                 ✅ Phase 5: Basic Chat UI + Mock Replies
@@ -98,7 +98,7 @@ function Dashboard() {
               <p><strong>Name:</strong> {user?.name}</p>
               <p><strong>Email:</strong> {user?.email}</p>
               <p><strong>User ID:</strong> {user?.id}</p>
-              <p><strong>Joined:</strong> {new Date(user?.created_at).toLocaleDateString()}</p>
+              <p><strong>Joined:</strong> {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}</p>
             </div>
           </div>
         </div>
