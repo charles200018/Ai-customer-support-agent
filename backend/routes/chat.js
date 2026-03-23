@@ -1,91 +1,67 @@
 // backend/routes/chat.js
-// Handles the /api/chat POST endpoint - authenticated, RAG-enabled AI chat
+// Handles the /api/chat POST endpoint for AI chat completions
 
 import express from 'express';
-import { getDb } from '../config/database.js';
-import { selectRelevantChunks } from '../utils/rag.js';
-import { authenticateToken } from '../middleware/auth.js';
+const fetch = require('node-fetch');
 
+console.log('chatRoutes file loaded');
 const router = express.Router();
 
 /**
  * POST /api/chat
- * Accepts: { "userMessage": "...", "documentId": "..." }
- * Fetches document from Firestore, selects relevant chunks (RAG),
- * then calls Groq API and returns the AI response.
+ * Accepts: { "userMessage": "..." }
+ * Calls Groq API and returns the AI response.
  */
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/chat', async (req, res) => {
   try {
+    // 1. Extract user message and documentId from request body
     const { userMessage, documentId } = req.body;
-
     if (!userMessage || !documentId) {
       return res.status(400).json({ error: 'Missing userMessage or documentId' });
     }
 
+    // 2. Prepare Groq API request
     const groqApiKey = process.env.GROQ_API_KEY;
     if (!groqApiKey) {
       console.error('GROQ_API_KEY not set in environment.');
       return res.status(500).json({ error: 'GROQ_API_KEY not set in environment.' });
     }
 
-    // Fetch document from Firestore and verify it belongs to this user
-    const db = getDb();
-    const docRef = db.collection('documents').doc(documentId);
-    const docSnap = await docRef.get();
+    const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
+    const payload = {
+      model: 'llama-3.1-8b-instant',
+      messages: [
+        { role: 'user', content: userMessage }
+      ]
+    };
 
-    if (!docSnap.exists) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-
-    const docData = docSnap.data();
-
-    // Security: ensure the document belongs to the authenticated user
-    if (docData.userId !== req.user.userId) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-
-    // RAG: select the most relevant chunks for the user's question
-    const chunks = Array.isArray(docData.chunks) ? docData.chunks : [];
-    const contextChunks = selectRelevantChunks(chunks, userMessage, 3);
-    const contextText = contextChunks.length > 0 ? contextChunks.join('\n---\n') : '';
-
-    // Compose system prompt with document context
-    const systemPrompt = contextText
-      ? `You are a helpful customer support agent. Answer the user's question based on the provided document context. Be concise and accurate.\n\nDocument context:\n${contextText}`
-      : `You are a helpful customer support agent. No relevant document context was found for this question, so answer based on your general knowledge.`;
-
-    // Call Groq API
-    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // 3. Call Groq API using fetch
+    const groqRes = await fetch(groqUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMessage },
-        ],
-      }),
+      body: JSON.stringify(payload)
     });
 
+    // 4. Handle Groq API response
     if (!groqRes.ok) {
       const errorText = await groqRes.text();
       console.error('Groq API error:', errorText);
       return res.status(groqRes.status).json({ error: 'Groq API error', details: errorText });
     }
-
     const data = await groqRes.json();
     const aiMessage = data.choices?.[0]?.message?.content;
-
     if (!aiMessage) {
       console.error('No AI response from Groq:', data);
       return res.status(502).json({ error: 'No AI response from Groq.' });
     }
 
+    // 5. Return AI response to frontend
     res.json({ answer: aiMessage });
   } catch (err) {
+    // 6. Handle unexpected errors
     console.error('Error in /api/chat:', err);
     return res.status(500).json({ error: 'Internal server error.' });
   }
