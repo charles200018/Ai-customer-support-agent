@@ -60,10 +60,22 @@ export default function Upload() {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>{success}</p>}
       <div>
-        <input type="file" accept=".pdf,.txt" 
-          onChange={(e) => setFile(e.target.files[0])} />
-        <button onClick={handleUpload} disabled={uploading || !file}>
-          {uploading ? 'Uploading...' : 'Upload & Extract'}
+          <input
+            type="file"
+            accept=".pdf,.txt"
+            onChange={e => {
+              setFile(e.target.files[0]);
+              if (e.target.files[0]) {
+                setTimeout(() => handleUpload(), 0);
+              }
+            }}
+            disabled={uploading}
+          />
+          <button
+            disabled
+            style={{ opacity: 0.5 }}
+          >
+            Save to Firebase
         </button>
       </div>
       <h2>Stored Documents</h2>

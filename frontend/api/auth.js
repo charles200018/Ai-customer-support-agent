@@ -1,0 +1,1 @@
+// This file is intentionally left blank as auth is now split into login.js, verify.js, and logout.js

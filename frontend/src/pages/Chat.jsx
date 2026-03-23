@@ -83,7 +83,7 @@ function Chat() {
       const assistantMessage = {
         id: nextIdRef.current++,
         role: 'assistant',
-        text: response.data.answer,
+        text: response.data.answer || response.data.reply,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
