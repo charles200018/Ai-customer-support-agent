@@ -46,46 +46,28 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid Google token payload' });
     }
 
-    const db = getDb();
-    const usersRef = db.collection('users');
-    const existing = await usersRef.where('email', '==', payload.email).limit(1).get();
-
-    let user;
+    const db = getDb()
+    const usersRef = db.collection('users')
+    const existing = await usersRef.where('email', '==', payload.email).limit(1).get()
+    let user
     if (!existing.empty) {
-      const doc = existing.docs[0];
-      const data = doc.data();
-      user = {
-        id: doc.id,
-        email: data.email,
-        name: data.name || null,
-        picture_url: data.picture_url || null,
-        created_at: data.createdAt?.toDate?.()?.toISOString() || null,
-      };
+      const doc = existing.docs[0]
+      user = { id: doc.id, email: doc.data().email, name: doc.data().name || null, picture_url: doc.data().picture_url || null }
     } else {
-      const now = new Date();
+      const now = new Date()
       const ref = await usersRef.add({
-        google_id: payload.sub,
-        email: payload.email,
-        name: payload.name || null,
-        picture_url: payload.picture || null,
-        createdAt: now,
-        updatedAt: now,
-      });
-      user = {
-        id: ref.id,
-        email: payload.email,
-        name: payload.name || null,
-        picture_url: payload.picture || null,
-        created_at: now.toISOString(),
-      };
+        google_id: payload.sub, email: payload.email,
+        name: payload.name || null, picture_url: payload.picture || null,
+        createdAt: now, updatedAt: now
+      })
+      user = { id: ref.id, email: payload.email, name: payload.name || null, picture_url: payload.picture || null }
     }
-
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
-    );
-    return res.json({ token, user });
+    )
+    return res.status(200).json({ token, user })
   } catch (err) {
     console.error('Login error:', err.message);
     return res.status(401).json({ error: 'Authentication failed', details: err.message });

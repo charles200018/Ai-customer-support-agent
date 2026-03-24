@@ -4,7 +4,9 @@
     {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     },
     {
       "src": "frontend/api/**/*.js",
@@ -12,14 +14,41 @@
     }
   ],
   "routes": [
-    { "src": "/api/auth/login", "dest": "frontend/api/auth/login.js" },
-    { "src": "/api/auth/verify", "dest": "frontend/api/auth/verify.js" },
-    { "src": "/api/auth/logout", "dest": "frontend/api/auth/logout.js" },
-    { "src": "/api/documents", "dest": "frontend/api/documents.js" },
-    { "src": "/api/upload", "dest": "frontend/api/upload.js" },
-    { "src": "/api/chat", "dest": "frontend/api/chat.js" },
-    { "src": "/api/health/db", "dest": "frontend/api/health/db.js" },
-    { "src": "/api/health", "dest": "frontend/api/health.js" },
-    { "src": "/(.*)", "dest": "frontend/$1" }
+    {
+      "src": "/api/auth/login",
+      "dest": "frontend/api/auth/login.js"
+    },
+    {
+      "src": "/api/auth/verify",
+      "dest": "frontend/api/auth/verify.js"
+    },
+    {
+      "src": "/api/auth/logout",
+      "dest": "frontend/api/auth/logout.js"
+    },
+    {
+      "src": "/api/documents",
+      "dest": "frontend/api/documents.js"
+    },
+    {
+      "src": "/api/upload",
+      "dest": "frontend/api/upload.js"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "frontend/api/chat.js"
+    },
+    {
+      "src": "/api/health/db",
+      "dest": "frontend/api/health/db.js"
+    },
+    {
+      "src": "/api/health",
+      "dest": "frontend/api/health.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
   ]
 }
