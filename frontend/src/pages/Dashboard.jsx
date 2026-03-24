@@ -1,63 +1,92 @@
-import { useAuth } from '../hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
-import './Dashboard.css'
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+    await logout();
+    navigate('/login');
+  };
+
+  // Example stats, replace with real data if available
+  const stats = [
+    { label: 'Documents', value: 12, icon: '📄' },
+    { label: 'Chats', value: 37, icon: '💬' },
+    { label: 'Knowledge Base', value: 5, icon: '📚' },
+    { label: 'Active Users', value: 1, icon: '🧑‍💻' },
+  ];
+
+  // Example KB cards
+  const kbCards = [
+    { title: 'How to Upload', desc: 'Upload PDF or TXT files to your knowledge base.', action: () => navigate('/upload') },
+    { title: 'Chat with AI', desc: 'Ask questions about your uploaded documents.', action: () => navigate('/chat') },
+    { title: 'Admin Panel', desc: 'Manage users and analytics (admins only).', action: () => navigate('/admin'), admin: true },
+  ];
+
+  const isAdmin = user?.email && user.email.endsWith('@admin.com');
 
   return (
-    <div className="dashboard-container">
-      <nav className="navbar">
-        <div className="nav-content">
-          <h2 className="logo">AI Customer Support Agent</h2>
-          <div className="user-menu">
-            <span className="user-name">{user?.name}</span>
-            <button onClick={handleLogout} className="logout-btn">
-              Logout
-            </button>
-          </div>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      <nav style={{
+        background: 'var(--color-surface)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: '1.5rem 2.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2rem', color: 'var(--color-accent)' }}>
+          AI Customer Support Agent
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <span style={{ color: 'var(--color-pearl)', fontFamily: 'DM Sans', fontSize: '1.1em', marginRight: 16 }}>
+            {user?.name}
+          </span>
+          <button className="btn" onClick={handleLogout}>Logout</button>
         </div>
       </nav>
 
-      <main className="dashboard-main">
-        <div className="container">
-          <div className="welcome-section">
-            <h1>Welcome, {user?.name}!</h1>
-            <p className="welcome-subtitle">
-              Your AI Customer Support Agent is ready to use
-            </p>
-          </div>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '3rem 2rem' }}>
+        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', color: 'var(--color-accent)', fontSize: '2.5rem', marginBottom: '0.5em' }}>
+          Welcome, {user?.name}!
+        </h1>
+        <p style={{ color: 'var(--color-pearl)', fontSize: '1.2rem', marginBottom: '2.5em' }}>
+          Your AI Customer Support Agent is ready to use.
+        </p>
 
-          <div className="dashboard-grid">
-            <div className="card">
-              <h3>📄 Upload Documents</h3>
-              <p>Upload PDF and TXT files (Phase 3)</p>
-              <button className="action-btn" onClick={() => navigate('/upload')}>
-                Open Upload
+        {/* Stats Grid */}
+        <div className="grid grid-4 mb-2">
+          {stats.map((stat, i) => (
+            <div key={i} className="card flex flex-center" style={{ flexDirection: 'column', minHeight: 140 }}>
+              <span style={{ fontSize: '2.2rem', marginBottom: 8 }}>{stat.icon}</span>
+              <span style={{ fontFamily: 'Cormorant Garamond', fontSize: '2rem', color: 'var(--color-accent)' }}>{stat.value}</span>
+              <span style={{ color: 'var(--color-pearl)', fontSize: '1.1em', opacity: 0.8 }}>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Knowledge Base Cards */}
+        <div className="grid grid-3">
+          {kbCards.filter(card => !card.admin || isAdmin).map((card, i) => (
+            <div key={i} className="card" style={{ minHeight: 180, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ color: 'var(--color-accent)', fontFamily: 'Cormorant Garamond', fontSize: '1.4rem', marginBottom: 8 }}>{card.title}</h3>
+                <p style={{ color: 'var(--color-pearl)', opacity: 0.85 }}>{card.desc}</p>
+              </div>
+              <button className="btn" style={{ marginTop: 18, alignSelf: 'flex-start' }} onClick={card.action}>
+                Open
               </button>
             </div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
 
-            <div className="card">
-              <h3>💬 Chat</h3>
-              <p>Ask questions about your documents (Phase 5)</p>
-              <button className="action-btn" onClick={() => navigate('/chat')}>
-                Open Chat
-              </button>
-            </div>
-
-            <div className="card">
-              <h3>📊 Dashboard</h3>
-              <p>View your documents and chat history (Phase 11)</p>
-              <button disabled className="action-btn">
-                Coming in Phase 11
-              </button>
-            </div>
+export default Dashboard;
 
             <div className="card">
               <h3>⚙️ Settings</h3>
