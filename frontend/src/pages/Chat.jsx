@@ -19,7 +19,7 @@ function Chat() {
   const [docError, setDocError] = useState('');
   const [docName, setDocName] = useState('');
   const nextIdRef = useRef(1);
-
+  const { logout, user } = useAuth();
   useEffect(() => {
     // Load documents on mount
     const fetchDocs = async () => {
@@ -30,7 +30,9 @@ function Chat() {
         const res = await axios.get('/api/documents', {
           headers: { Authorization: `Bearer ${token}` },
         });
+  const [typing, setTyping] = useState(false);
         setDocuments(res.data.documents || []);
+  const chatEndRef = useRef();
         if (res.data.documents && res.data.documents.length > 0) {
           setSelectedDocId(res.data.documents[0].id);
           setDocName(res.data.documents[0].filename || '');
@@ -59,6 +61,7 @@ function Chat() {
 
   const canSend = useMemo(() => input.trim().length > 0 && !sending && !!selectedDocId, [input, sending, selectedDocId]);
 
+        sources: [],
   const handleSend = async (event) => {
     event.preventDefault();
     const text = input.trim();
@@ -69,6 +72,9 @@ function Chat() {
     setInput('');
     setError('');
     setSending(true);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typing]);
 
     try {
       const token = localStorage.getItem('authToken');
@@ -82,6 +88,7 @@ function Chat() {
 
       const assistantMessage = {
         id: nextIdRef.current++,
+    setTyping(true);
         role: 'assistant',
         text: response.data.answer || response.data.reply,
       };
