@@ -22,7 +22,6 @@
     { "src": "/api/health", "dest": "frontend/api/health.js" },
     { "src": "/(.*)", "dest": "frontend/$1" }
   ]
-}
 {
   "version": 2,
   "builds": [
