@@ -13,6 +13,17 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    rollupOptions: {
+      external: [
+        'firebase-admin',
+        'firebase-admin/app',
+        'firebase-admin/firestore',
+        'pdf-parse',
+        'formidable',
+        'jsonwebtoken',
+        'google-auth-library'
+      ]
+    }
   }
 })

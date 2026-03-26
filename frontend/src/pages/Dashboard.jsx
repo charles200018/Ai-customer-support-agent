@@ -1,14 +1,14 @@
-﻿import { useAuth } from '../hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+﻿import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: '#0A0A0B', fontFamily: "'DM Sans', sans-serif" }}>
@@ -55,13 +55,15 @@ function Dashboard() {
             ].map(([k, v]) => (
               <div key={k}>
                 <div style={{ fontSize: '11px', color: '#8A8A9A', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase' }}>{k}</div>
-                <div style={{ color: '#C8C8D8', fontSize: '14px' }}>{v || '—'}</div>
+                <div style={{ color: '#C8C8D8', fontSize: '14px' }}>{v || '-'} </div>
               </div>
             ))}
           </div>
         </div>
       </main>
     </div>
-  )
+  );
 }
+
+export default Dashboard;
 

@@ -1,23 +1,24 @@
 // frontend/api/documents.js (Vercel serverless handler)
 import jwt from 'jsonwebtoken';
-import admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 function getDb() {
-    if (admin.apps.length === 0) {
+    if (getApps().length === 0) {
         let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
         if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
             privateKey = privateKey.slice(1, -1);
         }
         privateKey = privateKey.replace(/\\n/g, '\n');
-        admin.initializeApp({
-            credential: admin.credential.cert({
+        initializeApp({
+            credential: cert({
                 projectId: process.env.FIREBASE_PROJECT_ID,
                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
                 privateKey,
             }),
         });
     }
-    return admin.firestore();
+    return getFirestore();
 }
 
 export default async function handler(req, res) {

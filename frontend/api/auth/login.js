@@ -1,24 +1,25 @@
 // frontend/api/auth/login.js (Vercel serverless handler)
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 function getDb() {
-  if (admin.apps.length === 0) {
+  if (getApps().length === 0) {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
     if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
       privateKey = privateKey.slice(1, -1);
     }
     privateKey = privateKey.replace(/\\n/g, '\n');
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey,
       }),
     });
   }
-  return admin.firestore();
+  return getFirestore();
 }
 
 export default async function handler(req, res) {
@@ -49,18 +50,33 @@ export default async function handler(req, res) {
     const db = getDb()
     const usersRef = db.collection('users')
     const existing = await usersRef.where('email', '==', payload.email).limit(1).get()
-    let user
+    let user;
     if (!existing.empty) {
-      const doc = existing.docs[0]
-      user = { id: doc.id, email: doc.data().email, name: doc.data().name || null, picture_url: doc.data().picture_url || null }
+      const doc = existing.docs[0];
+      user = {
+        id: doc.id,
+        email: doc.data().email,
+        name: doc.data().name || null,
+        picture_url: doc.data().picture_url || null,
+        created_at: doc.data().createdAt?.toDate?.()?.toISOString() || null
+      };
     } else {
-      const now = new Date()
+      const now = new Date();
       const ref = await usersRef.add({
-        google_id: payload.sub, email: payload.email,
-        name: payload.name || null, picture_url: payload.picture || null,
-        createdAt: now, updatedAt: now
-      })
-      user = { id: ref.id, email: payload.email, name: payload.name || null, picture_url: payload.picture || null }
+        google_id: payload.sub,
+        email: payload.email,
+        name: payload.name || null,
+        picture_url: payload.picture || null,
+        createdAt: now,
+        updatedAt: now
+      });
+      user = {
+        id: ref.id,
+        email: payload.email,
+        name: payload.name || null,
+        picture_url: payload.picture || null,
+        created_at: now.toISOString()
+      };
     }
     const token = jwt.sign(
       { userId: user.id, email: user.email, name: user.name },
