@@ -1,46 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-  const handleUpload = async () => {
-    if (!file) { setError('Please select a file first'); return }
-    setUploading(true); setError(null); setSuccess(null)
-    try {
-      const token = localStorage.getItem('authToken')
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Upload failed')
-      setSuccess(`"${data.document?.filename}" uploaded and indexed!`)
-      setFile(null)
-      fetchDocuments()
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this document?')) return
-    try {
-      const token = localStorage.getItem('authToken')
-      const res = await fetch(`/api/documents?id=${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (!res.ok) throw new Error('Delete failed')
-      fetchDocuments()
-    } catch (err) {
-      setError('Failed to delete document')
-    }
-  }
-
-  const nv = { fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', color: '#C9A96E', letterSpacing: 4 }
 export default function Upload() {
   const [file, setFile] = useState(null)
   const [documents, setDocuments] = useState([])

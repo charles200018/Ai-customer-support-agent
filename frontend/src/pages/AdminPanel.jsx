@@ -3,9 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 function AdminPanel() {
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [stats] = useState({ users: 142, documents: 1847, conversations: 4291, apiCalls: 28430 });
+
+  // Role check: only allow Admins
+  if (user && user.role !== 'Admin') {
+    navigate('/dashboard');
+    return null;
+  }
 
   const handleLogout = async () => {
     await logout();

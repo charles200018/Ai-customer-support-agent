@@ -1,3 +1,5 @@
+# Ignore Vite build output
+frontend/dist/
 # Dependencies
 
 .pnp.js
