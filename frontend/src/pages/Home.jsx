@@ -134,14 +134,3 @@ function Home() {
 }
 
 export default Home
-        <ul>
-          <li>Google login succeeds</li>
-          <li>Dashboard is protected without a token</li>
-          <li>Logout clears session and returns to login</li>
-        </ul>
-      </div>
-    </div>
-  )
-}
-
-export default Home
