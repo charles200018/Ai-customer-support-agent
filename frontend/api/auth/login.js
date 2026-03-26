@@ -54,35 +54,41 @@ export default async function handler(req, res) {
     const usersRef = db.collection('users')
     const existing = await usersRef.where('email', '==', payload.email).limit(1).get()
     let user;
+    let role = 'User';
     if (!existing.empty) {
       const doc = existing.docs[0];
+      role = doc.data().role || 'User';
       user = {
         id: doc.id,
         email: doc.data().email,
         name: doc.data().name || null,
         picture_url: doc.data().picture_url || null,
-        created_at: doc.data().createdAt?.toDate?.()?.toISOString() || null
+        created_at: doc.data().createdAt?.toDate?.()?.toISOString() || null,
+        role
       };
     } else {
       const now = new Date();
+      role = payload.email.endsWith('@yourcompany.com') ? 'Admin' : 'User';
       const ref = await usersRef.add({
         google_id: payload.sub,
         email: payload.email,
         name: payload.name || null,
         picture_url: payload.picture || null,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
+        role
       });
       user = {
         id: ref.id,
         email: payload.email,
         name: payload.name || null,
         picture_url: payload.picture || null,
-        created_at: now.toISOString()
+        created_at: now.toISOString(),
+        role
       };
     }
     const token = jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.name, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )

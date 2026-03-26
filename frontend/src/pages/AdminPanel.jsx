@@ -1,6 +1,6 @@
 import '../styles/theme.css'
 import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 function AdminPanel() {
@@ -11,8 +11,7 @@ function AdminPanel() {
 
   // Role check: only allow Admins
   if (user && user.role !== 'Admin') {
-    navigate('/dashboard');
-    return null;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleLogout = async () => {

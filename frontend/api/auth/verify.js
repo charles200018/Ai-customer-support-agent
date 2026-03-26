@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     };
     return res.json({ user });
   } catch (err) {
-    console.error('Verify error:', err.message);
-    return res.status(500).json({ error: 'Failed to verify session', details: err.message });
+    console.error('Verify error:', err);
+    return res.status(500).json({ error: 'Failed to verify session' });
   }
 }

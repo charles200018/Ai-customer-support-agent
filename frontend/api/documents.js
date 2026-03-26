@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     try {
         decoded = jwt.verify(authHeader.substring(7), process.env.JWT_SECRET);
     } catch (err) {
-        return res.status(401).json({ error: 'Invalid token', details: err.message });
+        return res.status(401).json({ error: 'Invalid token' });
     }
 
     try {
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
 
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (err) {
-        console.error('Documents handler error:', err.message);
-        return res.status(500).json({ error: 'Server error', details: err.message });
+        console.error('Documents handler error:', err);
+        return res.status(500).json({ error: 'Server error' });
     }
 }
