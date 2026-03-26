@@ -1,14 +1,14 @@
-﻿import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+﻿import { useAuth } from '../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
 
 function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0A0A0B', fontFamily: "'DM Sans', sans-serif" }}>
@@ -35,7 +35,7 @@ function Dashboard() {
             <div key={i} onClick={() => navigate(card.path)}
               style={{ background: '#1A1A1F', border: '1px solid rgba(201,169,110,0.08)', padding: '28px 24px', cursor: 'pointer', transition: 'border-color 0.3s' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(201,169,110,0.35)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,169,110,0.08)' }>
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,169,110,0.08)'}>
               <div style={{ fontSize: '2rem', marginBottom: 16 }}>{card.icon}</div>
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', color: '#F4F2EC', marginBottom: 8 }}>{card.title}</div>
               <div style={{ fontSize: '13px', color: '#8A8A9A', marginBottom: 20, lineHeight: 1.5 }}>{card.desc}</div>
@@ -55,15 +55,15 @@ function Dashboard() {
             ].map(([k, v]) => (
               <div key={k}>
                 <div style={{ fontSize: '11px', color: '#8A8A9A', letterSpacing: 1, marginBottom: 6, textTransform: 'uppercase' }}>{k}</div>
-                <div style={{ color: '#C8C8D8', fontSize: '14px' }}>{v || '-'} </div>
+                <div style={{ color: '#C8C8D8', fontSize: '14px' }}>{v || '-'}</div>
               </div>
             ))}
           </div>
         </div>
       </main>
     </div>
-  );
+  )
 }
 
-export default Dashboard;
+export default Dashboard
 
