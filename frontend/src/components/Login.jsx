@@ -1,5 +1,6 @@
+import '../styles/theme.css'
 
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -73,17 +74,15 @@ export function Login() {
 
         <div style={{ marginBottom: '2.5em' }}>
           {clientId ? (
-            <GoogleOAuthProvider clientId={clientId}>
-              <GoogleLogin
-                onSuccess={handleLoginSuccess}
-                onError={() => console.log('Login Failed')}
-                theme="filled_black"
-                size="large"
-                text="continue_with"
-                shape="pill"
-                width="100%"
-              />
-            </GoogleOAuthProvider>
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={() => console.log('Login Failed')}
+              theme="filled_black"
+              size="large"
+              text="continue_with"
+              shape="pill"
+              width="100%"
+            />
           ) : (
             <div style={{
               background: '#2a1818',

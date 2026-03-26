@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Login } from './components/Login'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import Dashboard from './pages/Dashboard'
 import Upload from './pages/Upload'
 import Chat from './pages/Chat'
@@ -15,7 +16,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<ErrorBoundary><Login /></ErrorBoundary>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />

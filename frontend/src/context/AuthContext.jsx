@@ -38,10 +38,19 @@ export function AuthProvider({ children }) {
         googleToken
       })
       
-      const { token, user: userData } = response.data
+      const { token, user: rawUser } = response.data
+      // Sanitize user object
+      const safeUser = {
+        id: String(rawUser.id || rawUser.userId || ''),
+        email: String(rawUser.email || ''),
+        name: String(rawUser.name || ''),
+        picture_url: typeof rawUser.picture_url === 'string' ? rawUser.picture_url : '',
+        created_at: String(rawUser.created_at || rawUser.createdAt || ''),
+        role: rawUser.role ? String(rawUser.role) : (rawUser.isAdmin ? 'Admin' : 'User')
+      }
       localStorage.setItem('authToken', token)
-      setUser(userData)
-      return userData
+      setUser(safeUser)
+      return safeUser
     } catch (err) {
       const message = err.response?.data?.error || 'Login failed'
       setError(message)

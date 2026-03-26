@@ -1,3 +1,4 @@
+import '../styles/theme.css'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 export default function Upload() {
