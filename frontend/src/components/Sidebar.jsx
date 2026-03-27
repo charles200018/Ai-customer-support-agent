@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../hooks/useAuthHook';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Sidebar() {
+export default function Sidebar({ children }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,46 +18,47 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside
-      data-testid="sidebar"
-      style={{
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        height: '100vh',
-        width: 'var(--sidebar-width)',
-        background: 'var(--sidebar-bg)',
-        borderRight: '1px solid var(--sidebar-border)',
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: 32,
-        zIndex: 100,
-      }}
-      aria-label="Sidebar navigation"
-    >
-      {/* Logo */}
-      <div
+    <>
+      <aside
+        data-testid="sidebar"
         style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: 28,
-          color: 'var(--gold-pure)',
-          letterSpacing: 6,
-          fontWeight: 400,
-          marginLeft: 32,
-          marginBottom: 28,
-          cursor: 'pointer',
-          userSelect: 'none',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          height: '100vh',
+          width: 'var(--sidebar-width)',
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--sidebar-border)',
+          display: 'flex',
+          flexDirection: 'column',
+          paddingTop: 32,
+          zIndex: 100,
         }}
-        onClick={() => navigate('/dashboard')}
-        tabIndex={0}
-        aria-label="Go to dashboard"
-        data-testid="sidebar-logo"
+        aria-label="Sidebar navigation"
       >
-        AXIOM
-      </div>
-      <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0 0 12px 0' }} />
-      {/* Nav Items */}
-      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Logo */}
+        <div
+          style={{
+            fontFamily: 'Cormorant Garamond, serif',
+            fontSize: 28,
+            color: 'var(--gold-pure)',
+            letterSpacing: 6,
+            fontWeight: 400,
+            marginLeft: 32,
+            marginBottom: 28,
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          onClick={() => navigate('/dashboard')}
+          tabIndex={0}
+          aria-label="Go to dashboard"
+          data-testid="sidebar-logo"
+        >
+          AXIOM
+        </div>
+        <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0 0 12px 0' }} />
+        {/* Nav Items */}
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {navItems.map(item => (
           <button
             key={item.path}
@@ -182,6 +183,19 @@ export default function Sidebar() {
       >
         LOGOUT
       </button>
-    </aside>
+      </aside>
+      <main
+        style={{
+          marginLeft: 'var(--sidebar-width)',
+          minHeight: '100vh',
+          background: 'var(--bg-base)',
+          color: 'var(--text-primary)',
+          transition: 'margin-left 0.2s',
+        }}
+        data-testid="main-content"
+      >
+        {children}
+      </main>
+    </>
   );
 }
