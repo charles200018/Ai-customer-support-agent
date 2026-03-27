@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import chatRoutes from './routes/chat.js';
 import documentRoutes from './routes/documents.js';
 import uploadRoutes from './routes/upload.js';
+import chatHistoryRoutes from './routes/chatHistory.js';
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || 5000;
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/chat-history', chatHistoryRoutes);
 
 // Start the server
 app.listen(PORT, () => {

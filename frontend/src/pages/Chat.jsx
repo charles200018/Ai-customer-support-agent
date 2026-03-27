@@ -12,6 +12,7 @@ function Chat() {
   const { logout, user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const inputRef = useRef();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [documents, setDocuments] = useState([]);
@@ -53,6 +54,7 @@ function Chat() {
     const userMsg = { id: nextIdRef.current++, role: 'user', text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
+    if (inputRef.current) inputRef.current.focus();
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -206,6 +208,7 @@ function Chat() {
         <form onSubmit={handleSend} style={{ display: 'flex', gap: 12, alignItems: 'flex-end', background: 'var(--bg-glass)', borderRadius: 999, boxShadow: 'var(--shadow-deep)', padding: '10px 16px', border: '1.5px solid var(--border-glass)', marginTop: 18 }}>
           <textarea
             id="chat-input"
+            ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}

@@ -77,10 +77,7 @@ export default function Sidebar({ children }) {
               fontSize: 14,
               fontWeight: 400,
               letterSpacing: '0.02em',
-              color:
-                location.pathname === item.path
-                  ? 'var(--text-primary)'
-                  : 'var(--text-secondary)',
+              color: 'var(--text-primary)',
               textDecoration: 'none',
               borderLeft: location.pathname === item.path
                 ? '2px solid var(--gold-pure)'
@@ -100,15 +97,12 @@ export default function Sidebar({ children }) {
               outline: 'none',
             }}
             onMouseOver={e => {
-              e.currentTarget.style.color = 'var(--text-primary)';
+              e.currentTarget.style.color = 'var(--gold-pure)';
               e.currentTarget.style.background = 'var(--bg-hover)';
               e.currentTarget.style.borderLeftColor = 'var(--gold-muted)';
             }}
             onMouseOut={e => {
-              e.currentTarget.style.color =
-                location.pathname === item.path
-                  ? 'var(--gold-bright)'
-                  : 'var(--text-secondary)';
+              e.currentTarget.style.color = 'var(--text-primary)';
               e.currentTarget.style.background =
                 location.pathname === item.path
                   ? 'var(--gold-whisper)'
@@ -131,7 +125,7 @@ export default function Sidebar({ children }) {
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: 13,
-            color: 'var(--text-secondary)',
+            color: 'var(--text-primary)',
             marginBottom: 2,
             wordBreak: 'break-all',
           }}
@@ -142,7 +136,7 @@ export default function Sidebar({ children }) {
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: 11,
-            color: 'var(--text-tertiary)',
+            color: 'var(--text-primary)',
             marginBottom: 10,
             wordBreak: 'break-all',
           }}
