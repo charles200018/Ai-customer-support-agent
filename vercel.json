@@ -3,11 +3,7 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "cd frontend && npm install",
-  "functions": {
-    "frontend/api/**/*.js": {
-      "runtime": "nodejs20"
-    }
-  },
+  
   "rewrites": [
     { "source": "/api/auth/login", "destination": "/frontend/api/auth/login.js" },
     { "source": "/api/auth/verify", "destination": "/frontend/api/auth/verify.js" },
