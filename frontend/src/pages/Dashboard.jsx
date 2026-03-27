@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuthHook';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 function Dashboard() {
   const { user } = useAuth();

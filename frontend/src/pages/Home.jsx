@@ -2,6 +2,7 @@ import '../styles/theme.css'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuthHook';
 import { useEffect, useRef } from 'react';
+import React from 'react';
 
 function Home() {
   const navigate = useNavigate();

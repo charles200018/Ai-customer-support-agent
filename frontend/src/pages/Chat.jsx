@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuthHook';
+import React from 'react';
 
 const EXAMPLE_QUESTIONS = [
   'What is the main topic?',

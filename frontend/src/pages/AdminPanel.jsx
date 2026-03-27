@@ -2,6 +2,7 @@ import '../styles/theme.css'
 import { useAuth } from '../hooks/useAuthHook';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import React from 'react';
 
 function AdminPanel() {
 

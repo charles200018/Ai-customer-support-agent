@@ -3,6 +3,7 @@ import '../styles/theme.css'
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuthHook';
+import React from 'react';
 
 export function Login() {
   const navigate = useNavigate();
