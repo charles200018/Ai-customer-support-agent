@@ -1,5 +1,4 @@
 import React from 'react';
-import pkg from '../../../package.json';
 
 export default function About() {
   return (
@@ -26,7 +25,7 @@ export default function About() {
           </div>
         </div>
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: '0.14em', color: 'var(--text-tertiary)', textTransform: 'uppercase', marginBottom: 8 }}>Version</div>
-        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: 'var(--text-secondary)' }}>{pkg.version}</div>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: 'var(--text-secondary)' }}>{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'unknown'}</div>
       </div>
     </div>
   );
