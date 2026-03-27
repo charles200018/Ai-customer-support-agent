@@ -94,7 +94,7 @@ export default async function handler(req, res) {
     )
     return res.status(200).json({ token, user })
   } catch (err) {
-    console.error('Login error');
+    console.error('Login error:', err);
     return res.status(401).json({ error: 'Authentication failed' });
   }
 }

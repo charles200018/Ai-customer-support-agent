@@ -34,10 +34,11 @@ export function AuthProvider({ children }) {
   const login = async (googleToken) => {
     try {
       setError(null)
-      const response = await axios.post('/api/auth/login', {
-        googleToken
-      })
-      
+      const response = await axios.post('/api/auth/login', { googleToken })
+      if (!response.data || !response.data.token || !response.data.user) {
+        setError('Login failed: Invalid server response')
+        return null
+      }
       const { token, user: rawUser } = response.data
       // Sanitize user object
       const safeUser = {
@@ -52,9 +53,9 @@ export function AuthProvider({ children }) {
       setUser(safeUser)
       return safeUser
     } catch (err) {
-      const message = err.response?.data?.error || 'Login failed'
+      const message = err.response?.data?.error || 'Login failed. Please try again or contact support.'
       setError(message)
-      throw err
+      return null
     }
   }
 
