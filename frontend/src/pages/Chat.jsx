@@ -52,8 +52,8 @@ function Chat() {
     if (!text || !selectedDocId) return;
     const userMsg = { id: nextIdRef.current++, role: 'user', text };
     setMessages(prev => [...prev, userMsg]);
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
     setSending(true);
     setError('');
