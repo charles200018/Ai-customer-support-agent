@@ -1,19 +1,24 @@
 {
-  "builds": [
-    { "src": "frontend/package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } },
-    { "src": "frontend/api/**/*.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/auth/login", "dest": "frontend/api/auth/login.js" },
-    { "src": "/api/auth/verify", "dest": "frontend/api/auth/verify.js" },
-    { "src": "/api/auth/logout", "dest": "frontend/api/auth/logout.js" },
-    { "src": "/api/documents", "dest": "frontend/api/documents.js" },
-    { "src": "/api/upload", "dest": "frontend/api/upload.js" },
-    { "src": "/api/chat", "dest": "frontend/api/chat.js" },
-    { "src": "/api/health/db", "dest": "frontend/api/health/db.js" },
-    { "src": "/api/health", "dest": "frontend/api/health.js" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "frontend/dist/index.html" }
+  "version": 2,
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "cd frontend && npm install",
+  "functions": {
+    "frontend/api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/auth/login", "destination": "/frontend/api/auth/login.js" },
+    { "source": "/api/auth/verify", "destination": "/frontend/api/auth/verify.js" },
+    { "source": "/api/auth/logout", "destination": "/frontend/api/auth/logout.js" },
+    { "source": "/api/documents", "destination": "/frontend/api/documents.js" },
+    { "source": "/api/upload", "destination": "/frontend/api/upload.js" },
+    { "source": "/api/chat", "destination": "/frontend/api/chat.js" },
+    { "source": "/api/chat/history", "destination": "/frontend/api/chat.js" },
+    { "source": "/api/health/db", "destination": "/frontend/api/health/db.js" },
+    { "source": "/api/health", "destination": "/frontend/api/health.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
