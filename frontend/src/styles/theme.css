@@ -68,7 +68,8 @@ html {
   font-size: clamp(1rem, 2.5vw, 1.125rem);
 }
 
-/* AXIOM Master UI Redesign — Glassmorphism Theme */
+
+/* AXIOM v2 Glassmorphism Theme */
 :root {
   --bg-base: #0a0a0b;
   --bg-glass: rgba(255,255,255,0.04);
@@ -76,13 +77,21 @@ html {
   --border-glass: rgba(255,255,255,0.08);
   --gold: #c9a84c;
   --gold-light: #e8d5a3;
+  --gold-pure: #ffd700;
+  --gold-bright: #ffe9a0;
+  --gold-muted: #bfa76a;
+  --gold-whisper: #fffbe6;
   --text-primary: #f0e6d0;
+  --text-secondary: #b8b2a3;
+  --text-tertiary: #8a8a9a;
   --text-muted: rgba(240,230,208,0.5);
+  --border-subtle: #2d2d2d;
   --shadow-deep: 0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
   --radius: 16px;
   --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
   --font-serif: 'Cormorant Garamond', serif;
   --font-sans: 'DM Sans', 'Outfit', Arial, sans-serif;
+  --font-body: 'DM Sans', 'Outfit', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Mono', monospace;
 }
 
@@ -95,27 +104,30 @@ html {
   --text-muted: rgba(26,20,8,0.5);
 }
 
+
 body {
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   margin: 0;
   min-height: 100vh;
 }
 
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  color: var(--color-accent);
+  color: var(--gold);
   margin-top: 0;
 }
 
+
 a {
-  color: var(--color-accent);
+  color: var(--gold);
   text-decoration: none;
   transition: color var(--transition);
 }
 a:hover {
-  color: #fffbe6;
+  color: var(--gold-bright);
 }
 
 .card {
@@ -171,33 +183,19 @@ a:hover {
   border-radius: 8px;
 }
 
+
 /* Utility classes */
-.flex {
-  display: flex;
-}
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.grid {
-  display: grid;
-  gap: 2rem;
-}
-.grid-2 {
-  grid-template-columns: 1fr 1fr;
-}
-.grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-.grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.grid { display: grid; gap: 2rem; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
 .mt-2 { margin-top: 2rem; }
 .mb-2 { margin-bottom: 2rem; }
 .p-2 { padding: 2rem; }
 .rounded { border-radius: var(--radius); }
-.shadow { box-shadow: var(--color-shadow); }
+.shadow { box-shadow: var(--shadow-deep); }
 
 /* Drag-drop zone */
 .dropzone {
