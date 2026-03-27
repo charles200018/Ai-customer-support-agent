@@ -23,7 +23,14 @@ export function AuthProvider({ children }) {
         setLoading(false)
       } catch (err) {
         console.error('Auth verification failed:', err)
-        localStorage.removeItem('authToken')
+        if (err.response?.status === 401) {
+          // Token invalid/expired: clear token and user
+          localStorage.removeItem('authToken')
+          setUser(null)
+        } else {
+          // Server error: keep token, show transient error
+          setError('Unable to verify session. Please try again later.')
+        }
         setLoading(false)
       }
     }

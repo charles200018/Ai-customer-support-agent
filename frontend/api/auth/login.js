@@ -1,6 +1,6 @@
 // frontend/api/auth/login.js (Vercel serverless handler)
 import { OAuth2Client } from 'google-auth-library';
-import rateLimit from '../_rateLimit';
+import rateLimit from '../_rateLimit.js';
 import jwt from 'jsonwebtoken';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -26,7 +26,7 @@ function getDb() {
 export default async function handler(req, res) {
   // Rate limit: 10 requests per 60s per IP
   if (!rateLimit(req, res, { windowMs: 60 * 1000, max: 10 })) return;
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
       };
     } else {
       const now = new Date();
-      role = payload.email.endsWith('@yourcompany.com') ? 'Admin' : 'User';
+      role = 'User';
       const ref = await usersRef.add({
         google_id: payload.sub,
         email: payload.email,

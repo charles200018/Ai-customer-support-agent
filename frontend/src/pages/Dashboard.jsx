@@ -27,11 +27,11 @@ function Dashboard() {
         </h1>
         <p style={{ color: '#8A8A9A', marginBottom: '3rem' }}>Your AI intelligence workspace is ready</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 40 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: user?.role === 'Admin' ? 'repeat(3,1fr)' : 'repeat(2,1fr)', gap: 16, marginBottom: 40 }}>
           {[
             { icon: '📄', title: 'Upload Documents', desc: 'Upload PDF and TXT files to your knowledge base', path: '/upload' },
             { icon: '💬', title: 'Chat with AI', desc: 'Ask questions about your uploaded documents', path: '/chat' },
-            { icon: '⚙️', title: 'Admin Panel', desc: 'Manage users and view system analytics', path: '/admin' },
+            ...(user?.role === 'Admin' ? [{ icon: '⚙️', title: 'Admin Panel', desc: 'Manage users and view system analytics', path: '/admin' }] : [])
           ].map((card, i) => (
             <div key={i} onClick={() => navigate(card.path)}
               style={{ background: '#1A1A1F', border: '1px solid rgba(201,169,110,0.08)', padding: '28px 24px', cursor: 'pointer', transition: 'border-color 0.3s' }}

@@ -22,7 +22,7 @@ function getDb() {
 }
 
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '');
+    res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
@@ -46,6 +46,8 @@ export default async function handler(req, res) {
             const snapshot = await db
                 .collection('documents')
                 .where('userId', '==', decoded.userId)
+                .orderBy('createdAt', 'desc')
+                .limit(50)
                 .get();
             const documents = snapshot.docs.map((doc) => ({
                 id: doc.id,
