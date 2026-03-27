@@ -79,7 +79,7 @@ export default function Sidebar({ children }) {
               letterSpacing: '0.02em',
               color:
                 location.pathname === item.path
-                  ? 'var(--gold-bright)'
+                  ? 'var(--text-primary)'
                   : 'var(--text-secondary)',
               textDecoration: 'none',
               borderLeft: location.pathname === item.path
