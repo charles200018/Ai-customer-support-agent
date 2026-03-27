@@ -1,5 +1,3 @@
-# Ignore Vite build output
-frontend/dist/
 # Dependencies
 
 .pnp.js
@@ -37,6 +35,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+dist/
+node_modules/
 
 # Runtime data
 pids/

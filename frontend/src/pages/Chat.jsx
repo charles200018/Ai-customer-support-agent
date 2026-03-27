@@ -1,127 +1,201 @@
-import '../styles/theme.css'
-import { useRef, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useAuth } from '../hooks/useAuth'
+import '../styles/theme.css';
+import { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../hooks/useAuth';
+
+const EXAMPLE_QUESTIONS = [
+  'What is the main topic?',
+  'Summarize this document',
+  'What are the key points?',
+  'List all action items',
+  'What conclusions are drawn?',
+  'Explain the methodology',
+];
 
 function Chat() {
-  const navigate = useNavigate()
-  const { logout, user } = useAuth()
-  const [messages, setMessages] = useState([{ id: 0, role: 'assistant', text: 'Welcome! Select a document and ask a question.' }])
-  const [input, setInput] = useState('')
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState('')
-  const [documents, setDocuments] = useState([])
-  const [selectedDocId, setSelectedDocId] = useState('')
-  const [docLoading, setDocLoading] = useState(true)
-  const [docError, setDocError] = useState('')
-  const nextIdRef = useRef(1)
-  const chatEndRef = useRef()
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const [messages, setMessages] = useState([{ id: 0, role: 'assistant', text: 'Welcome! Select a document and ask a question.' }]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [documents, setDocuments] = useState([]);
+  const [selectedDocId, setSelectedDocId] = useState('');
+  const [docLoading, setDocLoading] = useState(true);
+  const [docError, setDocError] = useState('');
+  const [showUpload, setShowUpload] = useState(false);
+  const nextIdRef = useRef(1);
+  const chatEndRef = useRef();
 
   useEffect(() => {
     const fetchDocs = async () => {
-      setDocLoading(true)
+      setDocLoading(true);
       try {
-        const token = localStorage.getItem('authToken')
-        const res = await axios.get('/api/documents', { headers: { Authorization: `Bearer ${token}` } })
-        const docs = res.data.documents || []
-        setDocuments(docs)
-        if (docs.length > 0) setSelectedDocId(docs[0].id)
+        const token = localStorage.getItem('authToken');
+        const res = await axios.get('/api/documents', { headers: { Authorization: `Bearer ${token}` } });
+        const docs = res.data.documents || [];
+        setDocuments(docs);
+        if (docs.length > 0) setSelectedDocId(docs[0].id);
       } catch (err) {
-        setDocError(err?.response?.data?.error || 'Failed to load documents')
+        setDocError(err?.response?.data?.error || 'Failed to load documents');
       } finally {
-        setDocLoading(false)
+        setDocLoading(false);
       }
-    }
-    fetchDocs()
-  }, [])
+    };
+    fetchDocs();
+  }, []);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  const canSend = input.trim().length > 0 && !sending && !!selectedDocId
+  const canSend = input.trim().length > 0 && !sending && !!selectedDocId;
 
   const handleSend = async (event) => {
-    event.preventDefault()
-    const text = input.trim()
-    if (!text || !selectedDocId) return
-    const userMsg = { id: nextIdRef.current++, role: 'user', text }
-    setMessages(prev => [...prev, userMsg])
-    setInput('')
-    setSending(true)
-    setError('')
+    event.preventDefault();
+    const text = input.trim();
+    if (!text || !selectedDocId) return;
+    const userMsg = { id: nextIdRef.current++, role: 'user', text };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setSending(true);
+    setError('');
     try {
-      const token = localStorage.getItem('authToken')
+      const token = localStorage.getItem('authToken');
       const res = await axios.post('/api/chat', {
         userMessage: text,
         documentId: selectedDocId
-      }, { headers: { Authorization: `Bearer ${token}` } })
-      const reply = res.data.answer || res.data.reply || 'No response received.'
-      setMessages(prev => [...prev, { id: nextIdRef.current++, role: 'assistant', text: reply }])
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      const reply = res.data.answer || res.data.reply || 'No response received.';
+      setMessages(prev => [...prev, { id: nextIdRef.current++, role: 'assistant', text: reply }]);
     } catch (err) {
-      setError(err?.response?.data?.error || 'Failed to send message')
+      setError(err?.response?.data?.error || 'Failed to send message');
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+  // Example chip click: send immediately
+  const handleExample = (q) => {
+    setInput(q);
+    setTimeout(() => {
+      document.getElementById('chat-input')?.focus();
+      handleSend({ preventDefault: () => {} });
+    }, 0);
+  };
+
+  // Upload panel logic (placeholder, should use InlineUploadPanel component)
+  // ...existing code for upload panel integration...
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0A0A0B', fontFamily: "'DM Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
-      <nav style={{ background: '#111114', borderBottom: '1px solid rgba(201,169,110,0.12)', padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', color: '#C9A96E', letterSpacing: 4, cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>AXIOM</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{ color: '#8A8A9A', fontSize: '13px' }}>{user?.name}</span>
-          <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#C9A96E', padding: '6px 16px', cursor: 'pointer', fontSize: '11px', letterSpacing: 2 }}>LOGOUT</button>
-        </div>
-      </nav>
-
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', fontFamily: 'var(--font-sans)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: 900, width: '100%', margin: '0 auto', padding: '2rem 1rem 0' }}>
-
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: '11px', color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Document</label>
+        {/* Chat Header: Document selector as glass pill, +Upload button */}
+        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <label style={{ fontSize: '11px', color: 'var(--gold)', letterSpacing: 2, textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>Document</label>
           {docLoading ? (
-            <div style={{ color: '#8A8A9A', fontSize: '13px' }}>Loading documents...</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Loading documents...</div>
           ) : docError ? (
             <div style={{ color: '#f88', fontSize: '13px' }}>{docError}</div>
           ) : documents.length === 0 ? (
-            <div style={{ color: '#8A8A9A', fontSize: '13px' }}>No documents uploaded yet. <span style={{ color: '#C9A96E', cursor: 'pointer' }} onClick={() => navigate('/upload')}>Upload one →</span></div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>No documents uploaded yet. <span style={{ color: 'var(--gold)', cursor: 'pointer' }} onClick={() => setShowUpload(true)}>Upload one →</span></div>
           ) : (
-            <select value={selectedDocId} onChange={e => setSelectedDocId(e.target.value)}
-              style={{ background: '#1A1A1F', border: '1px solid rgba(201,169,110,0.2)', color: '#C8C8D8', padding: '10px 14px', fontSize: '14px', outline: 'none', width: '100%', maxWidth: 400 }}>
-              {documents.map(doc => (
-                <option key={doc.id} value={doc.id}>{doc.filename || doc.name || doc.id}</option>
-              ))}
-            </select>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <select
+                value={selectedDocId}
+                onChange={e => setSelectedDocId(e.target.value)}
+                style={{
+                  background: 'var(--bg-glass)',
+                  border: '1.5px solid var(--gold)',
+                  color: 'var(--text-primary)',
+                  padding: '10px 22px',
+                  fontSize: '15px',
+                  borderRadius: 999,
+                  outline: 'none',
+                  fontFamily: 'var(--font-sans)',
+                  minWidth: 180,
+                  boxShadow: '0 2px 16px 0 rgba(201,168,76,0.08)',
+                  transition: 'border 0.2s',
+                }}
+                aria-label="Select document"
+                data-testid="chat-document-select"
+              >
+                {documents.map(doc => (
+                  <option key={doc.id} value={doc.id}>{doc.filename || doc.name || doc.id}</option>
+                ))}
+              </select>
+              <button
+                onClick={() => setShowUpload(true)}
+                aria-label="Upload document"
+                data-testid="chat-upload-btn"
+                style={{
+                  background: 'var(--bg-glass)',
+                  border: '1.5px solid var(--gold)',
+                  color: 'var(--gold)',
+                  borderRadius: 999,
+                  width: 44,
+                  height: 44,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 22,
+                  cursor: 'pointer',
+                  marginLeft: 2,
+                  boxShadow: '0 2px 16px 0 rgba(201,168,76,0.08)',
+                  transition: 'background 0.2s',
+                }}
+              >
+                +
+              </button>
+            </div>
           )}
         </div>
 
+        {/* Chat Bubbles */}
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, paddingBottom: 16 }}>
           {messages.map(msg => (
             <div key={msg.id} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
               <div style={{
                 maxWidth: '75%',
-                padding: '12px 16px',
-                background: msg.role === 'user' ? 'rgba(201,169,110,0.15)' : '#1A1A1F',
-                border: `1px solid ${msg.role === 'user' ? 'rgba(201,169,110,0.25)' : 'rgba(201,169,110,0.08)'}`,
-                color: '#C8C8D8',
-                fontSize: '14px',
+                padding: '14px 20px',
+                background: msg.role === 'user' ? 'rgba(201,168,76,0.10)' : 'var(--bg-glass)',
+                border: `1.5px solid ${msg.role === 'user' ? 'var(--gold)' : 'var(--border-glass)'}`,
+                color: msg.role === 'user' ? 'var(--gold-light)' : 'var(--text-primary)',
+                fontSize: 'clamp(1rem,2.5vw,1.125rem)',
                 lineHeight: 1.6,
-                whiteSpace: 'pre-wrap'
+                whiteSpace: 'pre-wrap',
+                borderRadius: 18,
+                fontFamily: 'var(--font-sans)',
+                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)',
+                marginBottom: 2,
               }}>
                 {msg.text}
+                <div style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 12, marginTop: 6, textAlign: 'right' }}>
+                  {/* Timestamp placeholder */}
+                </div>
               </div>
             </div>
           ))}
           {sending && (
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <div style={{ padding: '12px 16px', background: '#1A1A1F', border: '1px solid rgba(201,169,110,0.08)', color: '#8A8A9A', fontSize: '13px' }}>
-                Thinking...
+              <div style={{
+                padding: '14px 20px',
+                background: 'var(--bg-glass)',
+                border: '1.5px solid var(--border-glass)',
+                color: 'var(--gold)',
+                fontSize: 'clamp(1rem,2.5vw,1.125rem)',
+                borderRadius: 18,
+                fontFamily: 'var(--font-sans)',
+                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)',
+                marginBottom: 2,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}>
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', opacity: 0.7, animation: 'pulse 1s infinite alternate' }} />
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', opacity: 0.5, animation: 'pulse 1s 0.2s infinite alternate' }} />
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', opacity: 0.3, animation: 'pulse 1s 0.4s infinite alternate' }} />
               </div>
             </div>
           )}
@@ -132,34 +206,90 @@ function Chat() {
           <div style={{ padding: '10px 0', color: '#f88', fontSize: '13px', marginBottom: 8 }}>{error}</div>
         )}
 
-        <div style={{ borderTop: '1px solid rgba(201,169,110,0.08)', paddingTop: 16, paddingBottom: 24, flexShrink: 0 }}>
+        {/* Example Chips */}
+        <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: 16, paddingBottom: 24, flexShrink: 0 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-            {['What is the main topic?', 'Summarize this document', 'What are the key points?'].map(q => (
-              <button key={q} onClick={() => setInput(q)}
-                style={{ padding: '5px 12px', background: 'transparent', border: '1px solid rgba(201,169,110,0.15)', color: '#8A8A9A', fontSize: '12px', cursor: 'pointer' }}>
+            {EXAMPLE_QUESTIONS.map((q, i) => (
+              <button
+                key={q}
+                onClick={() => handleExample(q)}
+                aria-label={q}
+                data-testid={`example-chip-${i}`}
+                style={{
+                  padding: '7px 18px',
+                  background: 'var(--bg-glass)',
+                  border: '1.5px solid var(--gold)',
+                  color: 'var(--gold)',
+                  fontSize: 'clamp(0.95rem,2vw,1.05rem)',
+                  borderRadius: 999,
+                  fontFamily: 'var(--font-sans)',
+                  cursor: 'pointer',
+                  marginBottom: 2,
+                  transition: 'background 0.18s, border 0.18s',
+                }}
+                onMouseOver={e => e.currentTarget.style.background = 'var(--bg-glass-hover)'}
+                onMouseOut={e => e.currentTarget.style.background = 'var(--bg-glass)'}
+              >
                 {q}
               </button>
             ))}
           </div>
-          <form onSubmit={handleSend} style={{ display: 'flex', gap: 10 }}>
+          {/* Input Bar */}
+          <form onSubmit={handleSend} style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'var(--bg-glass)', borderRadius: 999, boxShadow: 'var(--shadow-deep)', padding: '8px 12px', border: '1.5px solid var(--border-glass)' }}>
             <textarea
+              id="chat-input"
               value={input}
               onChange={e => setInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e) } }}
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
               placeholder={selectedDocId ? 'Ask a question about your document...' : 'Select a document first'}
               disabled={sending || !selectedDocId}
               rows={1}
-              style={{ flex: 1, background: '#1A1A1F', border: '1px solid rgba(201,169,110,0.15)', color: '#C8C8D8', padding: '13px 16px', fontSize: '14px', resize: 'none', outline: 'none', fontFamily: "'DM Sans', sans-serif", minHeight: 48 }}
+              style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-primary)',
+                padding: '13px 16px',
+                fontSize: 'clamp(1rem,2.5vw,1.125rem)',
+                resize: 'none',
+                outline: 'none',
+                fontFamily: 'var(--font-sans)',
+                minHeight: 48,
+                borderRadius: 999,
+              }}
+              aria-label="Chat input"
+              data-testid="chat-input"
             />
-            <button type="submit" disabled={!canSend}
-              style={{ width: 52, height: 52, background: canSend ? '#C9A96E' : 'rgba(201,169,110,0.2)', border: 'none', color: canSend ? '#0A0A0B' : '#8A8A9A', fontSize: '18px', cursor: canSend ? 'pointer' : 'not-allowed', flexShrink: 0, alignSelf: 'flex-end' }}>
-              →
+            <button
+              type="submit"
+              disabled={!canSend}
+              aria-label="Send message"
+              data-testid="chat-send"
+              style={{
+                width: 52,
+                height: 52,
+                background: canSend ? 'var(--gold)' : 'rgba(201,168,76,0.13)',
+                border: 'none',
+                color: canSend ? '#1a1408' : 'var(--text-muted)',
+                fontSize: 22,
+                cursor: canSend ? 'pointer' : 'not-allowed',
+                flexShrink: 0,
+                alignSelf: 'flex-end',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 16px 0 rgba(201,168,76,0.08)',
+                transition: 'background 0.18s',
+              }}
+            >
+              <span style={{ fontWeight: 700, fontSize: 22 }}>→</span>
             </button>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Chat
+export default Chat;

@@ -24,13 +24,17 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end()
 
     // Debug env vars
-    console.log('FIREBASE_PROJECT_ID:', !!process.env.FIREBASE_PROJECT_ID)
-    console.log('FIREBASE_CLIENT_EMAIL:', !!process.env.FIREBASE_CLIENT_EMAIL)
-    console.log('FIREBASE_PRIVATE_KEY:', !!process.env.FIREBASE_PRIVATE_KEY)
-    console.log('JWT_SECRET:', !!process.env.JWT_SECRET)
+    const envDebug = {
+      FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+      FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+      FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY ? '[set]' : '[missing]',
+      JWT_SECRET: process.env.JWT_SECRET ? '[set]' : '[missing]'
+    }
+    console.log('ENV DEBUG:', envDebug)
 
     const authHeader = req.headers['authorization']
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('No token provided')
       return res.status(401).json({ error: 'No token provided' })
     }
     const token = authHeader.substring(7)
@@ -38,6 +42,7 @@ export default async function handler(req, res) {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET)
     } catch (err) {
+      console.error('JWT verification failed:', err)
       return res.status(401).json({ 
         error: 'Invalid token', 
         jwtSecretExists: !!process.env.JWT_SECRET,
@@ -51,10 +56,11 @@ export default async function handler(req, res) {
       db = getDb()
       console.log('Firebase initialized successfully')
     } catch (fbErr) {
-      console.log('Firebase init error:', fbErr.message)
+      console.error('Firebase init error:', fbErr)
       return res.status(500).json({ 
         error: 'Firebase init failed', 
-        details: fbErr.message 
+        details: fbErr.message,
+        envDebug
       })
     }
 
