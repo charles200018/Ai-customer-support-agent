@@ -2,7 +2,7 @@ import '../styles/theme.css';
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 
 const EXAMPLE_QUESTIONS = [
   'What is the main topic?',

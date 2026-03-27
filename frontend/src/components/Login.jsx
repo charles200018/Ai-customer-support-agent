@@ -2,7 +2,7 @@ import '../styles/theme.css'
 
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 
 export function Login() {
   const navigate = useNavigate();

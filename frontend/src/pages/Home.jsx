@@ -1,7 +1,6 @@
-
 import '../styles/theme.css'
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuthHook';
 import { useEffect, useRef } from 'react';
 
 function Home() {

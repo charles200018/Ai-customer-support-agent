@@ -1,6 +1,6 @@
-
-
-
+import { useAuth } from '../hooks/useAuthHook';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import SidebarDocuments from './SidebarDocuments';
 import SidebarSettings from './SidebarSettings';
 import InlineUploadPanel from './InlineUploadPanel';
